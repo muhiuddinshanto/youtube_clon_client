@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { HiMiniCheckCircle } from "react-icons/hi2";
 
@@ -22,7 +23,7 @@ export function ChannelInfo({ channelId, channelName, avatar, initialSubscribers
     setIsSubscribed(nextState);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API}/users/${channelId}/subscribe`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_API}/users/${channelId}/subscribe`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isSubscribing: nextState }),
@@ -61,8 +62,10 @@ export function ChannelInfo({ channelId, channelName, avatar, initialSubscribers
       {/* চ্যানেল নেম এবং সাবস্ক্রাইবার কাউন্ট */}
       <div className="flex flex-col">
         <div className="font-bold text-[16px] flex items-center gap-1">
-          <span>{channelName || "Programming Hero"}</span>
-          <HiMiniCheckCircle className="text-gray-400 h-4 w-4" />
+          <Link href={`/channel/${channelId}`} className="font-bold text-[16px] flex items-center gap-1 cursor-pointer hover:text-gray-300 transition">
+        <span>{channelName || "Programming Hero"}</span>
+        <HiMiniCheckCircle className="text-gray-400 h-4 w-4" />
+      </Link>
         </div>
         <span className="text-xs text-[#aaa]">
           {formatSubscribers(subscribersCount)} subscribers

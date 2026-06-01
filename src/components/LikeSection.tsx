@@ -37,7 +37,7 @@ export function LikeSection({ videoId, initialLikes = [], initialDislikes = [], 
     setDislikes(updatedDislikes);
 
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API}/videos/${videoId}/like`, {
+      await fetch(`${process.env.NEXT_PUBLIC_SERVER_API}/videos/${videoId}/like`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
@@ -69,7 +69,7 @@ export function LikeSection({ videoId, initialLikes = [], initialDislikes = [], 
     setDislikes(updatedDislikes);
 
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API}/videos/${videoId}/dislike`, {
+      await fetch(`${process.env.NEXT_PUBLIC_SERVER_API}/videos/${videoId}/dislike`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
