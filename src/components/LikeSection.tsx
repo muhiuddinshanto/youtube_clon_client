@@ -1,108 +1,129 @@
 "use client";
 
 import { useState } from "react";
-import { BiLike, BiDislike } from "react-icons/bi";
+import { AiFillLike, AiFillDislike, AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
+import { authClient } from "@/lib/auth-client"; // Better-Auth ক্লায়েন্ট
+import { getAuthJwtToken } from "@/lib/auth-token";
+import toast from "react-hot-toast";
 
+// 🎯 ইন্টারফেসটি ভালো করে খেয়াল করুন, userId এর পাশে '?' দেওয়া হয়েছে
 interface LikeSectionProps {
   videoId: string;
   initialLikes: string[];
-  initialDislikes: string[]; // 👈 ডিসলাইক অ্যারেও নিয়ে আসলাম
-  userId: string;
+  initialDislikes: string[];
+  userId?: string; // 👈 এখানে '?' দেওয়ার কারণে এটি এখন অপশনাল (Optional)
 }
 
-export function LikeSection({ videoId, initialLikes = [], initialDislikes = [], userId }: LikeSectionProps) {
-  // স্টেট ম্যানেজমেন্ট
+export function LikeSection({ videoId, initialLikes = [], initialDislikes = [] }: LikeSectionProps) {
+  const { data: session } = authClient.useSession(); // ⚡ ক্লায়েন্ট সাইড থেকে ডাইনামিক সেশন রিড করা হচ্ছে
+  const userId = session?.user?.id;
+
   const [likes, setLikes] = useState<string[]>(initialLikes);
   const [dislikes, setDislikes] = useState<string[]>(initialDislikes);
-  
-  const isLiked = likes.includes(userId);
-  const isDisliked = dislikes.includes(userId);
 
-  // 👍 লাইক বাটনের ক্লিকের লজিক
-  const handleLikeClick = async () => {
-    let updatedLikes = [...likes];
-    let updatedDislikes = [...dislikes];
+  const isLiked = userId ? likes.includes(userId) : false;
+  const isDisliked = userId ? dislikes.includes(userId) : false;
 
-    if (isLiked) {
-      // অলরেডি লাইক করা থাকলে লাইক উঠে যাবে
-      updatedLikes = updatedLikes.filter(id => id !== userId);
-    } else {
-      // লাইক না করা থাকলে লাইক হবে, এবং ডিসলাইক করা থাকলে সেটা রিমুভ হবে
-      updatedLikes.push(userId);
-      updatedDislikes = updatedDislikes.filter(id => id !== userId);
+  const handleLike = async () => {
+    if (!userId) {
+      toast.error("Please sign in to like this video.");
+      return;
     }
 
-    // স্টেট আপডেট (ইউজার সাথে সাথে ইন্টারফেসে দেখবে)
-    setLikes(updatedLikes);
-    setDislikes(updatedDislikes);
+    const nextState = !isLiked;
+    // ⚡ অপটিমিস্টিক আপডেট লজিক
+    if (nextState) {
+      setLikes((prev) => [...prev, userId]);
+      if (isDisliked) setDislikes((prev) => prev.filter((id) => id !== userId));
+    } else {
+      setLikes((prev) => prev.filter((id) => id !== userId));
+    }
 
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SERVER_API}/videos/${videoId}/like`, {
+      const token = await getAuthJwtToken();
+      if (!token) throw new Error("Please sign in again.");
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_API}/videos/${videoId}/like`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, isAdding: nextState }),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.message || `Like failed (${res.status})`);
+      }
     } catch (error) {
-      console.error("Like error:", error);
-      // এরর হলে ওল্ড স্টেটে ফেরত যাওয়া (রোলব্যাক)
-      setLikes(likes);
-      setDislikes(dislikes);
+      console.error("Like action failed:", error);
+      toast.error(error instanceof Error ? error.message : "Like failed.");
+      // 🔄 ফেল করলে রিভার্ট ব্যাক
+      setLikes(initialLikes);
+      setDislikes(initialDislikes);
     }
   };
 
-  // 👎 ডিসলাইক বাটনের ক্লিকের লজিক
-  const handleDislikeClick = async () => {
-    let updatedLikes = [...likes];
-    let updatedDislikes = [...dislikes];
-
-    if (isDisliked) {
-      // অলরেডি ডিসলাইক থাকলে সেটা উঠে যাবে
-      updatedDislikes = updatedDislikes.filter(id => id !== userId);
-    } else {
-      // ডিসলাইক না থাকলে ডিসলাইক হবে, এবং লাইক করা থাকলে সেটা রিমুভ হবে
-      updatedDislikes.push(userId);
-      updatedLikes = updatedLikes.filter(id => id !== userId);
+  const handleDislike = async () => {
+    if (!userId) {
+      toast.error("Please sign in to dislike this video.");
+      return;
     }
 
-    // স্টেট আপডেট
-    setLikes(updatedLikes);
-    setDislikes(updatedDislikes);
+    const nextState = !isDisliked;
+    // ⚡ অপটিমিস্টিক আপডেট লজিক
+    if (nextState) {
+      setDislikes((prev) => [...prev, userId]);
+      if (isLiked) setLikes((prev) => prev.filter((id) => id !== userId));
+    } else {
+      setDislikes((prev) => prev.filter((id) => id !== userId));
+    }
 
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SERVER_API}/videos/${videoId}/dislike`, {
+      const token = await getAuthJwtToken();
+      if (!token) throw new Error("Please sign in again.");
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_API}/videos/${videoId}/dislike`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, isAdding: nextState }),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.message || `Dislike failed (${res.status})`);
+      }
     } catch (error) {
-      console.error("Dislike error:", error);
-      setLikes(likes);
-      setDislikes(dislikes);
+      console.error("Dislike action failed:", error);
+      toast.error(error instanceof Error ? error.message : "Dislike failed.");
+      // 🔄 ফেল করলে রিভার্ট ব্যাক
+      setLikes(initialLikes);
+      setDislikes(initialDislikes);
     }
   };
 
   return (
-    <div className="flex items-center bg-[#272727] rounded-full overflow-hidden">
-      {/* 👍 লাইক বাটন */}
+    <div className="flex items-center bg-[#272727] rounded-full overflow-hidden text-sm font-medium h-9 select-none">
+      {/* লাইক বাটন */}
       <button 
-        onClick={handleLikeClick}
-        className={`flex items-center gap-2 hover:bg-[#3f3f3f] px-4 py-2 text-sm font-medium border-r border-[#3f3f3f] transition ${
-          isLiked ? "text-blue-400" : "text-white"
-        }`}
+        onClick={handleLike}
+        className="flex items-center gap-2 px-4 hover:bg-[#3f3f3f] h-full transition rounded-l-full border-r border-[#3f3f3f]"
       >
-        <BiLike className={`h-5 w-5 ${isLiked ? "fill-blue-400" : ""}`} />
+        {isLiked ? <AiFillLike className="h-5 w-5 text-white" /> : <AiOutlineLike className="h-5 w-5 text-gray-300" />}
         <span>{likes.length}</span>
       </button>
-      
-      {/* 👎 ডিসলাইক বাটন */}
+
+      {/* ডিসলাইক বাটন */}
       <button 
-        onClick={handleDislikeClick}
-        className={`flex items-center gap-2 hover:bg-[#3f3f3f] px-4 py-2 transition ${
-          isDisliked ? "text-red-400" : "text-white"
-        }`}
+        onClick={handleDislike}
+        className="flex items-center gap-2 px-4 hover:bg-[#3f3f3f] h-full transition rounded-r-full"
       >
-        <BiDislike className={`h-5 w-5 ${isDisliked ? "fill-red-400" : ""}`} />
-        {/* ইউটিউব সাধারণত ডিসলাইকের সংখ্যা দেখায় না, শুধু বাটন কালার হাইলাইট করে */}
+        {isDisliked ? <AiFillDislike className="h-5 w-5 text-white" /> : <AiOutlineDislike className="h-5 w-5 text-gray-300" />}
+        <span>{dislikes.length}</span>
       </button>
     </div>
   );

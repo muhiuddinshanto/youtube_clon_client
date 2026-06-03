@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
+import { Sidebar } from "@/components/Sidebar"; // 👈 নতুন সাইadবার ইম্পোর্ট করলাম
 import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
@@ -34,29 +35,21 @@ export default function RootLayout({
         {/* ইউটিউব স্টাইল নেভবার */}
         <Navbar />
 
-        {/* মেইন ভিডিও গ্রিড লেআউট এরিয়া */}
+        {/* মেইন ভিডিও গ্রিড লেআউট এরিয়া */}
         <div className="flex w-full flex-1">
-          {/* sidebar */}
-         <aside className="w-64 flex-shrink-0 hidden md:block p-4 border-r border-[#272727]">
-            {/* এখানে আপনার সাইডবারের মেনু আইটেমগুলো বসবে */}
-            <div className="space-y-4 text-sm text-gray-400">
-              <div className="text-white font-medium">Home</div>
-              <div>Shorts</div>
-              <div>Subscriptions</div>
-              <hr className="border-[#272727]" />
-              <div>Library</div>
-              <div>History</div>
-            </div>
-          </aside>
-         {/* main */}
-         <div className="flex-1 p-6 overflow-y-auto ">
-           <main >
-          {children}
-        </main>
-         </div>
+          
+          {/* 🟢 ডাইনামিক আইকন-বেসড সাইডবার */}
+          <Sidebar />
+
+          {/* main content area */}
+          <div className="min-w-0 flex-1 overflow-y-auto p-3 pb-20 sm:p-6 md:pb-6">
+            <main>
+              {children}
+            </main>
+          </div>
         </div>
 
-        <Toaster/>
+        <Toaster position="bottom-right" />
         
       </body>
     </html>

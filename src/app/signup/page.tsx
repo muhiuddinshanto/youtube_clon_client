@@ -21,6 +21,7 @@ export default function SignUpPage() {
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
         const confirmPassword = formData.get("confirmPassword") as string;
+        const image = formData.get("image") as string; // 👈 ১. ইমেজ ইউআরএল কালেক্ট করুন
 
         if (password !== confirmPassword) {
             toast.error("Passwords do not match!");
@@ -28,10 +29,11 @@ export default function SignUpPage() {
             return;
         }
 
-        const { data, error: authError } = await authClient.signUp.email({
+        const { error: authError } = await authClient.signUp.email({
             email,
             password,
             name,
+            image, // 👈 ২. Better-Auth এ পাস করে দিন
             callbackURL: "/"
         });
 
@@ -51,7 +53,7 @@ export default function SignUpPage() {
                 provider: "google",
                 callbackURL: "/"
             });
-        } catch (err) {
+        } catch {
             toast.error("Google sign in failed!");
         }
     };
@@ -64,19 +66,19 @@ export default function SignUpPage() {
 
             {/* 🔮 মেইন কার্ড */}
             <div className="w-full max-w-md bg-[#1c1c1e]/80 backdrop-blur-xl p-8 rounded-2xl border border-white/[0.12] shadow-[0_12px_40px_0_rgba(0,0,0,0.5)] space-y-6 z-10">
-                
+
                 <div className="space-y-1 text-center">
                     <h1 className="text-2xl font-bold tracking-tight">Create an account</h1>
                     <p className="text-sm text-gray-400">Join our YouTube clone community</p>
                 </div>
 
                 <Form className="flex flex-col gap-5 w-full" onSubmit={onSubmit}>
-                    
+
                     {/* Name Field */}
                     <TextField isRequired name="name" type="text" className="w-full flex flex-col gap-1.5">
                         <Label className="text-gray-200 text-sm font-semibold">Full Name</Label>
-                        <Input 
-                            placeholder="Mohiuddin Shanto" 
+                        <Input
+                            placeholder="Mohiuddin Shanto"
                             className="bg-white/[0.07] hover:bg-white/[0.1] focus-within:!bg-white/[0.1] border-2 border-white/[0.15] focus-within:border-white/50 rounded-xl transition duration-200 h-12 text-white placeholder:text-gray-500 px-3 flex items-center"
                         />
                         <FieldError className="text-red-400 text-xs mt-1 font-medium" />
@@ -96,8 +98,19 @@ export default function SignUpPage() {
                         }}
                     >
                         <Label className="text-gray-200 text-sm font-semibold">Email</Label>
-                        <Input 
-                            placeholder="shanto@example.com" 
+                        <Input
+                            placeholder="shanto@example.com"
+                            className="bg-white/[0.07] hover:bg-white/[0.1] focus-within:!bg-white/[0.1] border-2 border-white/[0.15] focus-within:border-white/50 rounded-xl transition duration-200 h-12 text-white placeholder:text-gray-500 px-3 flex items-center"
+                        />
+                        <FieldError className="text-red-400 text-xs mt-1 font-medium" />
+                    </TextField>
+
+                    {/* Image Field */}
+                    {/* Profile Image URL Field */}
+                    <TextField name="image" type="url" className="w-full flex flex-col gap-1.5">
+                        <Label className="text-gray-200 text-sm font-semibold">Profile Image URL</Label>
+                        <Input
+                            placeholder="https://example.com/avatar.jpg"
                             className="bg-white/[0.07] hover:bg-white/[0.1] focus-within:!bg-white/[0.1] border-2 border-white/[0.15] focus-within:border-white/50 rounded-xl transition duration-200 h-12 text-white placeholder:text-gray-500 px-3 flex items-center"
                         />
                         <FieldError className="text-red-400 text-xs mt-1 font-medium" />
@@ -117,8 +130,8 @@ export default function SignUpPage() {
                         }}
                     >
                         <Label className="text-gray-200 text-sm font-semibold">Password</Label>
-                        <Input 
-                            placeholder="Enter your password" 
+                        <Input
+                            placeholder="Enter your password"
                             className="bg-white/[0.07] hover:bg-white/[0.1] focus-within:!bg-white/[0.1] border-2 border-white/[0.15] focus-within:border-white/50 rounded-xl transition duration-200 h-12 text-white placeholder:text-gray-500 px-3 flex items-center"
                         />
                         <Description className="text-gray-400 text-[11px] mt-0.5 leading-tight">
@@ -130,8 +143,8 @@ export default function SignUpPage() {
                     {/* Confirm Password Field */}
                     <TextField isRequired name="confirmPassword" type="password" className="w-full flex flex-col gap-1.5">
                         <Label className="text-gray-200 text-sm font-semibold">Confirm Password</Label>
-                        <Input 
-                            placeholder="Repeat your password" 
+                        <Input
+                            placeholder="Repeat your password"
                             className="bg-white/[0.07] hover:bg-white/[0.1] focus-within:!bg-white/[0.1] border-2 border-white/[0.15] focus-within:border-white/50 rounded-xl transition duration-200 h-12 text-white placeholder:text-gray-500 px-3 flex items-center"
                         />
                         <FieldError className="text-red-400 text-xs mt-1 font-medium" />
@@ -148,7 +161,7 @@ export default function SignUpPage() {
                     <div className="flex-grow border-t border-white/[0.12]"></div>
                 </div>
 
-                <Button 
+                <Button
                     onClick={handleGoogleSignIn}
                     className="w-full bg-[#27272a]/80 hover:bg-[#3f3f46] text-white flex items-center justify-center gap-3 h-12 rounded-xl border-2 border-white/[0.1] transition duration-200 font-semibold text-sm"
                 >
