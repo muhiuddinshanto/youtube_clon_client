@@ -6,6 +6,7 @@ import { ShareButton } from "@/components/ShareButton";
 import { DownloadButton } from "@/components/DownloadButton";
 import { ChannelInfo } from "@/components/ChannelInfo"; 
 import { WatchHistoryRecorder } from "@/components/WatchHistoryRecorder";
+import { CommentSection } from "@/components/CommentSection";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { HiMiniCheckCircle } from "react-icons/hi2";
 import { headers } from "next/headers"; 
@@ -110,6 +111,9 @@ const WatchDetailsPage = async (props: WatchPageProps) => {
               ))}
             </div>
           </div>
+
+          {/* 💬 কমেন্ট সেকশন */}
+          <CommentSection videoId={videoData._id} />
         </div>
 
         {/* 👉 ডান পাশের সাইডবার (Up Next Videos) */}
