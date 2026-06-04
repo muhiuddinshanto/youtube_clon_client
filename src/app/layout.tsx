@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
-import { Sidebar } from "@/components/Sidebar"; // 👈 নতুন সাইadবার ইম্পোর্ট করলাম
+import { Sidebar } from "@/components/Sidebar"; 
 import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
@@ -32,16 +32,16 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#0f0f0f] text-white">
         
-        {/* ইউটিউব স্টাইল নেভবার */}
+       
         <Navbar />
 
-        {/* মেইন ভিডিও গ্রিড লেআউট এরিয়া */}
+       
         <div className="flex w-full flex-1">
           
-          {/* 🟢 ডাইনামিক আইকন-বেসড সাইডবার */}
+          
           <Sidebar />
 
-          {/* main content area */}
+       
           <div className="min-w-0 flex-1 overflow-y-auto p-3 pb-20 sm:p-6 md:pb-6">
             <main>
               {children}
@@ -49,7 +49,7 @@ export default function RootLayout({
           </div>
         </div>
 
-        <Toaster position="bottom-right" />
+        <Toaster  position="top-center" />
         
       </body>
     </html>
