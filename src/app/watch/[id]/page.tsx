@@ -8,6 +8,7 @@ import { ChannelInfo } from "@/components/ChannelInfo";
 import { WatchHistoryRecorder } from "@/components/WatchHistoryRecorder";
 import { CommentSection } from "@/components/CommentSection";
 import { VideoPlayer } from "@/components/VideoPlayer";
+import { VideoOwnerActions } from "@/components/VideoOwnerActions";
 import { HiMiniCheckCircle } from "react-icons/hi2";
 import { headers } from "next/headers"; 
 import { auth } from "@/lib/auth";
@@ -92,6 +93,8 @@ const WatchDetailsPage = async (props: WatchPageProps) => {
               />
             </div>
           </div>
+
+          <VideoOwnerActions video={videoData} currentUserId={session?.user?.id} />
 
           {/* 📝 ডেসক্রিপশন বক্স */}
           <div className="bg-[#272727] hover:bg-[#3f3f3f] p-4 rounded-xl text-sm transition space-y-2">

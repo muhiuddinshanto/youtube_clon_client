@@ -1,53 +1,80 @@
-# 📺 YouTube Clone - Full Stack Application
+# YouTube Clone - Full Stack Video Platform
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
 ![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react)
-![Node.js](https://img.shields.io/badge/Node.js-Express-green?style=for-the-badge&logo=node.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178C6?style=for-the-badge&logo=typescript)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248?style=for-the-badge&logo=mongodb)
-![Better-Auth](https://img.shields.io/badge/Better_Auth-Authentication-purple?style=for-the-badge)
+![Better Auth](https://img.shields.io/badge/Better_Auth-Authentication-purple?style=for-the-badge)
 
-A modern, fully functional YouTube clone built with **Next.js (App Router)** for the frontend and **Node.js/Express** with **MongoDB** for the backend. The application features a sleek dark-mode UI and includes essential video-sharing platform functionalities.
+A modern YouTube clone built with **Next.js App Router**, **React 19**, **Better Auth**, and a separate **Node.js/Express + MongoDB** backend. Users can create channels, upload videos, watch videos, like/dislike, comment, subscribe, and manage their own uploaded content.
 
-## ✨ Features
+## Live Demo
 
-- **🔐 Authentication:** Secure email/password and Google login using `better-auth`.
-- **🎬 Video Player:** Seamless video playback with dynamic URL routing and auto-cleanup.
-- **💬 Comment System:** Authenticated users can post comments on videos in real-time.
-- **👍 Like/Dislike System:** Users can interact with videos (optimistic UI updates).
-- **📺 Channel Profiles:** Users can create and customize their own channels (avatar, cover, bio).
-- **📤 Video Uploading:** Upload new videos to your channel.
-- **🔔 Subscriptions:** Subscribe/unsubscribe to channels and view them in the Library.
-- **📚 Library & Watch History:** Keep track of liked videos and view your subscribed channels.
-- **📱 Responsive UI:** Mobile-friendly design with a clean, modern aesthetic.
+**Live Site:** [https://youtube-clon-client.vercel.app](https://youtube-clon-client.vercel.app)
 
-## 🛠️ Tech Stack
+## Features
 
-### Frontend (Client)
-- **Framework:** [Next.js](https://nextjs.org/) (React)
-- **Styling:** Tailwind CSS
-- **Authentication:** `better-auth/react`
-- **Icons:** `react-icons`
-- **Notifications:** `react-hot-toast`
+- Email/password and Google authentication with Better Auth
+- Channel creation with profile, avatar, cover image, and bio
+- Video upload using external video and thumbnail URLs
+- Dynamic watch page with video player, channel info, suggested videos, and description
+- Like and dislike system for authenticated users
+- Comment system with add, edit, and delete support
+- Owner-only video edit and delete actions
+- Subscribe and unsubscribe channel flow
+- Library page for liked videos and subscribed channels
+- Watch history page
+- Responsive dark UI inspired by YouTube
 
-### Backend (Server)
-- **Runtime:** Node.js
-- **Framework:** Express.js
-- **Database:** MongoDB (via `mongodb` native driver)
-- **Security/Auth:** JSON Web Tokens (JWT) via `jose-cjs` & Better-Auth
+## Tech Stack
 
-## 🚀 Getting Started
+### Frontend
+
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS
+- HeroUI
+- Better Auth
+- React Hot Toast
+- React Icons
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB native driver
+- JWT verification with Better Auth JWKS
+
+## Getting Started
 
 ### Prerequisites
-Make sure you have [Node.js](https://nodejs.org/) and [Git](https://git-scm.com/) installed on your machine.
 
-### 1. Clone the repository
+Make sure you have these installed:
+
+- Node.js
+- npm
+- Git
+- A running backend server
+- MongoDB connection string
+
+### Clone The Repository
+
 ```bash
 git clone https://github.com/muhiuddinshanto/youtube_clon_client.git
 cd youtube_clone
 ```
 
-### 2. Environment Variables
-Create a `.env` file in the root directory and add the following:
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
 ```env
 NEXT_PUBLIC_API=http://localhost:3000
 NEXT_PUBLIC_SERVER_API=http://localhost:5000
@@ -61,26 +88,68 @@ GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 ```
 
-### 3. Install Dependencies
-```bash
-npm install
-```
+For production deployment, update the values to match your live frontend and backend URLs.
 
-### 4. Run the Development Server
+### Run Locally
+
 ```bash
 npm run dev
 ```
-The frontend will be available at [http://localhost:3000](http://localhost:3000).
 
-*(Note: Make sure your separate Express backend server is running on port 5000 for full functionality).*
+The frontend will run at [http://localhost:3000](http://localhost:3000).
 
-## 📂 Project Structure
+Make sure the Express backend is also running, usually at [http://localhost:5000](http://localhost:5000).
 
-- `/src/app` - Next.js App Router pages (Home, Watch, Library, etc.)
-- `/src/components` - Reusable UI components (VideoPlayer, Navbar, CommentSection, etc.)
-- `/src/lib` - Utility functions and authentication configuration.
+## Available Scripts
 
-## 🤝 Contributing
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-Contributions, issues, and feature requests are welcome! 
-Feel free to check [issues page](https://github.com/muhiuddinshanto/youtube_clon_client/issues).
+## Project Structure
+
+```txt
+src/
+  app/              Next.js App Router pages and API routes
+  components/       Reusable UI and feature components
+  lib/              Auth and helper utilities
+public/             Static assets
+```
+
+## Important Backend Routes
+
+The frontend expects these backend routes to exist:
+
+```txt
+GET    /videos
+GET    /videos/:id
+POST   /api/video/upload
+PUT    /api/video/:id
+DELETE /api/video/:id
+
+GET    /videos/:id/comments
+POST   /videos/:id/comments
+PUT    /videos/:videoId/comments/:commentId
+DELETE /videos/:videoId/comments/:commentId
+
+POST   /api/channel/create
+GET    /channels/:id
+PUT    /users/:id/subscribe
+GET    /api/library/liked-videos
+GET    /api/library/subscribed-channels
+```
+
+## Deployment
+
+This frontend is deployed on Vercel:
+
+[https://youtube-clon-client.vercel.app](https://youtube-clon-client.vercel.app)
+
+When deploying, set all required environment variables in the Vercel dashboard and make sure `NEXT_PUBLIC_SERVER_API` points to the deployed backend server.
+
+## Author
+
+Built by Mohiuddin Shanto.
