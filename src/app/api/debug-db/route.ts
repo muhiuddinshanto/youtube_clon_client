@@ -19,19 +19,46 @@ export async function GET() {
     const usersPluralCount = await db.collection("users").countDocuments();
     const usersPluralDocs = await db.collection("users").find().limit(5).toArray();
 
+    // session collection check
+    const sessionCount = await db.collection("session").countDocuments();
+    const sessionDocs = await db.collection("session").find().limit(3).toArray();
+
     return Response.json({
       allCollections: collectionNames,
 
       userSingular: {
         collection: "user",
         count: userSingularCount,
-        docs: usersSingularDocs.map((d) => ({ _id: d._id, email: d.email, name: d.name, channelName: d.channelName, following: d.following, subscribers: d.subscribers })),
+        docs: usersSingularDocs.map((d) => ({
+          _id: d._id,
+          email: d.email,
+          name: d.name,
+          channelName: d.channelName,
+          following: d.following,
+          subscribers: d.subscribers,
+        })),
       },
 
       usersPlural: {
         collection: "users",
         count: usersPluralCount,
-        docs: usersPluralDocs.map((d) => ({ _id: d._id, email: d.email, name: d.name, channelName: d.channelName, following: d.following, subscribers: d.subscribers })),
+        docs: usersPluralDocs.map((d) => ({
+          _id: d._id,
+          email: d.email,
+          name: d.name,
+          channelName: d.channelName,
+          following: d.following,
+          subscribers: d.subscribers,
+        })),
+      },
+
+      sessions: {
+        count: sessionCount,
+        docs: sessionDocs.map((d) => ({
+          _id: d._id,
+          userId: d.userId,
+          expiresAt: d.expiresAt,
+        })),
       },
     });
   } catch (error) {

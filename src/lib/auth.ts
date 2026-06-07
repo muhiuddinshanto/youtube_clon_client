@@ -8,9 +8,6 @@ const db = client.db('youtube_clone');
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
-  user: {
-    modelName: "users", // ব্যাকএন্ড Express সার্ভারের সাথে একই "users" কালেকশন ব্যবহার করার জন্য
-  },
   emailAndPassword: { 
     enabled: true, 
   },

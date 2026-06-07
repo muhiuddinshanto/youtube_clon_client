@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChannelInfo } from "@/components/ChannelInfo";
 import { CreateChannelForm } from "@/components/CreateChannelForm"; 
 import { QuickVideoPost } from "@/components/QuickVideoPost";     
+import { ChannelEditForm } from "@/components/ChannelEditForm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
@@ -31,6 +32,7 @@ const ChannelProfilePage = async ({ params }: ChannelPageProps) => {
   }
 
   const { profile, videos } = channelData;
+  const isOwner = session?.user?.id === id;
 
   // 🎯 কন্ডিশন ১: যদি ইউজারের 'channelName' সেট করা না থাকে, তবে আগে চ্যানেল খোলার ফর্ম দেখাবে
   if (!profile.channelName) {
@@ -71,8 +73,18 @@ const ChannelProfilePage = async ({ params }: ChannelPageProps) => {
           )}
         </div>
 
+        {isOwner && (
+          <ChannelEditForm
+            channelId={id}
+            profile={{
+              ...profile,
+              _id: (profile._id ?? id).toString(),
+            }}
+          />
+        )}
+
         {/* 🚀 ৩. ভিডিও পোস্ট করার লিংক সেকশন */}
-        <QuickVideoPost userId={id} />
+        {isOwner && <QuickVideoPost userId={id} />}
 
         {/* 🎬 ৪. ভিডিও সেকশন */}
         <div>

@@ -1,6 +1,7 @@
 export interface ChannelData {
   _id?: string;
   channelName?: string | null;
+  username?: string;
   name?: string;
   avatar?: string;
   image?: string;
